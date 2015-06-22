@@ -31,16 +31,6 @@ func testSolIn(sol [][]int, solutions [][][]int) bool {
 	return false
 }
 
-func remove(list []int, elem int) []int {
-	for i := 0; i < len(list); i++ {
-		if list[i] == elem {
-			list = append(list[:i], list[i+1])
-		}
-	}
-
-	return list
-}
-
 func abs(i int) int {
 	if i < 0 {
 		return -i
