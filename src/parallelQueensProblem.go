@@ -130,7 +130,7 @@ func queensResolverProcess(queue chan [][][]int, begin int, end int, size int) {
 
 func queensResolver(size int, processes int) [][][]int {
 	results := [][][]int{}
-	if size&processes != 0 {
+	if size%processes != 0 || processes > size {
 		panic("Erro!")
 	}
 	multi := size / processes
