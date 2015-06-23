@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"encoding/csv"
+	"fmt"
+	"os"
+	"strconv"
+	"time"
+)
 
 func quickSort(list []int) []int {
 	var result []int
@@ -44,8 +50,57 @@ func quickSort(list []int) []int {
 	return result
 }
 
+func quickSortProfiler(list []int, repetitions int, filename string) {
+
+	perf, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := perf.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	for r := 0; r < repetitions; r++ {
+		t := time.Now()
+		quickSort(list)
+		elapsed := time.Since(t).Nanoseconds()
+
+		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func listFromFile(filename string) []int {
+	list := []int{}
+	f, err := os.Open(filename)
+
+	reader := csv.NewReader(f)
+
+	reader.FieldsPerRecord = -1
+
+	rawCSVdata, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	for _, each := range rawCSVdata {
+		currentValue, _ := strconv.Atoi(each[0])
+		list = append(list, currentValue)
+	}
+	return list
+}
+
 func main() {
-	list := []int{3, 1, 2, 6, 4, 5, 8, 9, 20, 15, 16, 13, 43, 21, 44, 44, 39, 100, 27, 80}
-	fmt.Println("List == ", list)
-	fmt.Println("List 2 == ", quickSort(list))
+	problem_file := os.Args[1]
+	repetitions, err3 := strconv.Atoi(os.Args[2])
+	if err3 != nil {
+		panic(err3)
+	}
+	filename := os.Args[3]
+	list := listFromFile(problem_file)
+	quickSortProfiler(list, repetitions, filename)
 }
