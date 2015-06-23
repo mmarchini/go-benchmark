@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"time"
+)
 
 func in(elem int, list []int) bool {
 	for i := 0; i < len(list); i++ {
@@ -125,6 +130,9 @@ func queensResolverProcess(queue chan [][][]int, begin int, end int, size int) {
 
 func queensResolver(size int, processes int) [][][]int {
 	results := [][][]int{}
+	if size&processes != 0 {
+		panic("Erro!")
+	}
 	multi := size / processes
 	queue := make(chan [][][]int)
 
@@ -147,18 +155,42 @@ func queensResolver(size int, processes int) [][][]int {
 	return results
 }
 
+func queensProblemProfiler(size int, processes int, repetitions int, filename string) {
+
+	perf, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := perf.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	for r := 0; r < repetitions; r++ {
+		t := time.Now()
+		queensResolver(size, processes)
+		elapsed := time.Since(t).Nanoseconds()
+
+		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func main() {
-	fmt.Println("Resolution count (1):", len(queensResolver(1, 1)))
-	fmt.Println("Resolution count (2):", len(queensResolver(2, 2)))
-	fmt.Println("Resolution count (3):", len(queensResolver(3, 3)))
-	fmt.Println("Resolution count (4):", len(queensResolver(4, 4)))
-	fmt.Println("Resolution count (5):", len(queensResolver(5, 5)))
-	fmt.Println("Resolution count (6):", len(queensResolver(6, 3)))
-	fmt.Println("Resolution count (7):", len(queensResolver(7, 7)))
-	fmt.Println("Resolution count (8):", len(queensResolver(8, 4)))
-	fmt.Println("Resolution count (9):", len(queensResolver(9, 3)))
-	fmt.Println("Resolution count (10):", len(queensResolver(10, 5)))
-	fmt.Println("Resolution count (11):", len(queensResolver(11, 11)))
-	fmt.Println("Resolution count (12):", len(queensResolver(12, 4)))
-	//fmt.Println("Resolution count (13):", len(queensResolver(13)))
+	size, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	processes, err2 := strconv.Atoi(os.Args[2])
+	if err2 != nil {
+		panic(err2)
+	}
+	repetitions, err3 := strconv.Atoi(os.Args[3])
+	if err3 != nil {
+		panic(err3)
+	}
+	filename := os.Args[4]
+	queensProblemProfiler(size, processes, repetitions, filename)
 }

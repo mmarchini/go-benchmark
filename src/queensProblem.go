@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"time"
+)
 
 func in(elem int, list []int) bool {
 	for i := 0; i < len(list); i++ {
@@ -123,18 +128,38 @@ func queensResolver(size int) [][][]int {
 	return results
 }
 
+func queensProblemProfiler(size int, repetitions int, filename string) {
+
+	perf, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := perf.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	for r := 0; r < repetitions; r++ {
+		t := time.Now()
+		queensResolver(size)
+		elapsed := time.Since(t).Nanoseconds()
+
+		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func main() {
-	fmt.Println("Resolution count (1):", len(queensResolver(1)))
-	fmt.Println("Resolution count (2):", len(queensResolver(2)))
-	fmt.Println("Resolution count (3):", len(queensResolver(3)))
-	fmt.Println("Resolution count (4):", len(queensResolver(4)))
-	fmt.Println("Resolution count (5):", len(queensResolver(5)))
-	fmt.Println("Resolution count (6):", len(queensResolver(6)))
-	fmt.Println("Resolution count (7):", len(queensResolver(7)))
-	fmt.Println("Resolution count (8):", len(queensResolver(8)))
-	fmt.Println("Resolution count (9):", len(queensResolver(9)))
-	fmt.Println("Resolution count (10):", len(queensResolver(10)))
-	fmt.Println("Resolution count (11):", len(queensResolver(11)))
-	fmt.Println("Resolution count (12):", len(queensResolver(12)))
-	fmt.Println("Resolution count (13):", len(queensResolver(13)))
+	size, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	repetitions, err3 := strconv.Atoi(os.Args[2])
+	if err3 != nil {
+		panic(err3)
+	}
+	filename := os.Args[3]
+	queensProblemProfiler(size, repetitions, filename)
 }
