@@ -76,7 +76,7 @@ func matrixMultiplicationProfiler(A [][]int, B [][]int, processes int, repetitio
 
 	for r := 0; r < repetitions; r++ {
 		t := time.Now()
-		result := matrixMultiplication(A, B, processes)
+		matrixMultiplication(A, B, processes)
 		elapsed := time.Since(t).Nanoseconds()
 
 		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {

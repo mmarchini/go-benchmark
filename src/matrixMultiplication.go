@@ -60,7 +60,7 @@ func matrixMultiplicationProfiler(A [][]int, B [][]int, repetitions int, filenam
 
 	for r := 0; r < repetitions; r++ {
 		t := time.Now()
-		result := matrixMultiplication(A, B)
+		matrixMultiplication(A, B)
 		elapsed := time.Since(t).Nanoseconds()
 
 		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
