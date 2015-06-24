@@ -62,7 +62,6 @@ func matrixMultiplicationProfiler(A [][]int, B [][]int, repetitions int, filenam
 		t := time.Now()
 		result := matrixMultiplication(A, B)
 		elapsed := time.Since(t).Nanoseconds()
-		fmt.Println(result)
 
 		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
 			panic(err)

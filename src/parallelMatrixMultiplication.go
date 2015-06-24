@@ -36,6 +36,9 @@ func matrixMultiplication(A [][]int, B [][]int, processes int) [][]int {
 		panic("Erro!")
 	}
 	M := [][]int{}
+	for i := 0; i < len(A); i++ {
+		M = append(M, []int{})
+	}
 	rotB := rotateMatrix(B)
 	c := make(chan int)
 	multi := len(A) / processes
@@ -43,11 +46,9 @@ func matrixMultiplication(A [][]int, B [][]int, processes int) [][]int {
 	for p := 0; p < processes; p++ {
 		go func(begin int, end int) {
 			for i := begin; i < end; i++ {
-				row := []int{}
 				for j := 0; j < len(rotB); j++ {
-					row = append(row, vectorMultiplication(A[i], rotB[j]))
+					M[i] = append(M[i], vectorMultiplication(A[i], rotB[j]))
 				}
-				M = append(M, row)
 			}
 
 			c <- 1
@@ -77,7 +78,6 @@ func matrixMultiplicationProfiler(A [][]int, B [][]int, processes int, repetitio
 		t := time.Now()
 		result := matrixMultiplication(A, B, processes)
 		elapsed := time.Since(t).Nanoseconds()
-		fmt.Println(result)
 
 		if _, err := perf.WriteString(fmt.Sprintf("%d\n", elapsed)); err != nil {
 			panic(err)
