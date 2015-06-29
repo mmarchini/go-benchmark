@@ -35,28 +35,31 @@ func matrixMultiplication(A [][]int, B [][]int, processes int) [][]int {
 	if len(A)%processes != 0 || processes > len(A) {
 		panic("Erro!")
 	}
+	rotB := rotateMatrix(B)
 	M := [][]int{}
 	for i := 0; i < len(A); i++ {
 		M = append(M, []int{})
+		for j := 0; j < len(rotB); j++ {
+			M[i] = append(M[i], 0)
+		}
 	}
-	rotB := rotateMatrix(B)
-	c := make(chan int)
+	c := make(chan [3]int)
 	multi := len(A) / processes
 
 	for p := 0; p < processes; p++ {
 		go func(begin int, end int) {
 			for i := begin; i < end; i++ {
 				for j := 0; j < len(rotB); j++ {
-					M[i] = append(M[i], vectorMultiplication(A[i], rotB[j]))
+					c <- [3]int{i, j, vectorMultiplication(A[i], rotB[j])}
 				}
 			}
-
-			c <- 1
 		}(p*multi, (p+1)*multi)
 	}
 
-	for p := 0; p < processes; p++ {
-		<-c
+	var aux [3]int
+	for v := 0; v < len(A)*len(rotB); v++ {
+		aux = <-c
+		M[aux[0]][aux[1]] = aux[2]
 	}
 
 	return M
