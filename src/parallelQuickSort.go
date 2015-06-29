@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -50,7 +51,7 @@ func quickSort(list []int) []int {
 	return result
 }
 
-func quickSortProfiler(list []int, repetitions int, filename string) {
+func quickSortProfiler(list []int, processes int, repetitions int, filename string) {
 
 	perf, err := os.Create(filename)
 	if err != nil {
@@ -61,6 +62,8 @@ func quickSortProfiler(list []int, repetitions int, filename string) {
 			panic(err)
 		}
 	}()
+
+	runtime.GOMAXPROCS(processes)
 
 	for r := 0; r < repetitions; r++ {
 		t := time.Now()
@@ -96,11 +99,15 @@ func listFromFile(filename string) []int {
 
 func main() {
 	problem_file := os.Args[1]
-	repetitions, err3 := strconv.Atoi(os.Args[2])
+	processes, err2 := strconv.Atoi(os.Args[2])
+	if err2 != nil {
+		panic(err2)
+	}
+	repetitions, err3 := strconv.Atoi(os.Args[3])
 	if err3 != nil {
 		panic(err3)
 	}
 	filename := os.Args[3]
 	list := listFromFile(problem_file)
-	quickSortProfiler(list, repetitions, filename)
+	quickSortProfiler(list, processes, repetitions, filename)
 }

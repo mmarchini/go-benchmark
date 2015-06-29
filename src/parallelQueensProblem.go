@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -119,6 +120,8 @@ func queensProblemProfiler(size int, processes int, repetitions int, filename st
 			panic(err)
 		}
 	}()
+
+	runtime.GOMAXPROCS(processes)
 
 	for r := 0; r < repetitions; r++ {
 		t := time.Now()

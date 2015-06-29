@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -76,6 +77,8 @@ func matrixMultiplicationProfiler(A [][]int, B [][]int, processes int, repetitio
 			panic(err)
 		}
 	}()
+
+	runtime.GOMAXPROCS(processes)
 
 	for r := 0; r < repetitions; r++ {
 		t := time.Now()
