@@ -107,7 +107,7 @@ func main() {
 	if err3 != nil {
 		panic(err3)
 	}
-	filename := os.Args[3]
+	filename := os.Args[4]
 	list := listFromFile(problem_file)
 	quickSortProfiler(list, processes, repetitions, filename)
 }
